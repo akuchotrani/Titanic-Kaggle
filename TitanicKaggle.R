@@ -37,3 +37,20 @@ titanic.test <- titanic.full[titanic.full$IsTrainSet == FALSE,]
 
 titanic.train$Survived <- as.factor(titanic.train$Survived)
 
+survived.equation <- "Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked"
+survived.formula <- as.formula(survived.equation)
+
+#install.packages("randomForest")
+library(randomForest)
+titanic.model <-randomForest(formula = survived.formula, data = titanic.train, ntree = 500, mtry = 3, nodesize = 0.01* nrow(titanic.test))
+
+features.equation <- "Pclass + Sex + Age + SibSp + Parch + Fare + Embarked"
+Survived <- predict(titanic.model, newdata = titanic.test)
+
+
+PassengerId <- titanic.test$PassengerId
+output.dataFrame <- as.data.frame(PassengerId)
+output.dataFrame$Survived <- Survived
+
+write.csv(output.dataFrame, file = "my_kaggle_submission.csv",row.names = FALSE)
+
